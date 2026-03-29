@@ -312,28 +312,70 @@ st.markdown("""
     .main {
         direction: rtl;
     }
+    
+    /* Question result indicators */
+    .question-correct {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+        color: white !important;
+    }
+    
+    .question-wrong {
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%) !important;
+        color: white !important;
+    }
+    
+    /* Lesson tags */
+    .lesson-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-right: 8px;
+    }
+    
+    .lesson-tag-1 { background: #667eea; color: white; }
+    .lesson-tag-2 { background: #11998e; color: white; }
+    .lesson-tag-3 { background: #f093fb; color: white; }
+    .lesson-tag-4 { background: #ff6b6b; color: white; }
 </style>
 """, unsafe_allow_html=True)
 
 # Initialize session state
-for key in ['current_slide', 'current_question', 'quiz_started', 'show_answer', 'correct_count', 'wrong_count', 'selected_unit']:
+for key in ['current_slide', 'current_question', 'quiz_started', 'show_answer', 'correct_count', 'wrong_count', 'selected_unit', 'question_results']:
     if key not in st.session_state:
-        st.session_state[key] = 0 if 'count' in key or 'slide' in key or 'question' in key else False
+        if key == 'question_results':
+            st.session_state[key] = {}
+        elif key in ['correct_count', 'wrong_count', 'current_slide', 'current_question', 'selected_unit']:
+            st.session_state[key] = 0
+        else:
+            st.session_state[key] = False
 
 if 'current_slide_u2' not in st.session_state:
     st.session_state.current_slide_u2 = 0
 
-# Combine all questions
+# Combine all questions with proper lesson info
 all_questions = []
 for q in unit1_questions:
     q_copy = q.copy()
     q_copy['unit'] = 1
+    # Ensure lesson is set (default to 1 if not present)
+    if 'lesson' not in q_copy:
+        q_copy['lesson'] = 1
     all_questions.append(q_copy)
 for q in unit2_questions:
     q_copy = q.copy()
     q_copy['unit'] = 2
-    q_copy['lesson'] = 4
+    q_copy['lesson'] = 4  # Unit 2 lessons start at 4
     all_questions.append(q_copy)
+
+# Lesson names
+lesson_names = {
+    1: "الدرس الأول: التغيرات الفيزيائية",
+    2: "الدرس الثاني: التغيرات الكيميائية", 
+    3: "الدرس الثالث: التطبيقات العملية",
+    4: "الوحدة الثانية: الكهروكيمياء"
+}
 
 # Unit 1 slides
 unit1_slides = [
@@ -442,33 +484,6 @@ unit1_slides = [
 st.sidebar.markdown("<h1 style='text-align: right;'>📚 قائمة التنقل</h1>", unsafe_allow_html=True)
 page = st.sidebar.radio("", ["🏠 الرئيسية", "📖 الوحدة الأولى", "📖 الوحدة الثانية", "❓ اختبار MCQ", "📊 إحصائيات"], label_visibility="collapsed")
 
-def render_slide_nav(total_slides, current, key_prefix, callback):
-    """Render slide navigation with better UI"""
-    # Create rows of buttons
-    buttons_per_row = 7
-    num_rows = (total_slides + buttons_per_row - 1) // buttons_per_row
-    
-    for row in range(num_rows):
-        cols = st.columns(min(buttons_per_row, total_slides - row * buttons_per_row))
-        for i, col in enumerate(cols):
-            slide_num = row * buttons_per_row + i
-            # Highlight current slide
-            if slide_num == current:
-                button_style = """
-                    <style>
-                    div[data-testid="stHorizontalBlock"] div:nth-child({}) button {{
-                        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
-                        transform: scale(1.1);
-                        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4) !important;
-                    }}
-                    </style>
-                """
-                st.markdown(button_style, unsafe_allow_html=True)
-            
-            if col.button(f"{slide_num + 1}", key=f"{key_prefix}_{slide_num}"):
-                callback(slide_num)
-                st.rerun()
-
 if page == "🏠 الرئيسية":
     st.title("📚 مرحباً بك في تطبيق مينا للمذاكرة")
     st.markdown("---")
@@ -501,6 +516,12 @@ if page == "🏠 الرئيسية":
     
     st.markdown("---")
     
+    # Count questions by lesson
+    lesson_counts = {}
+    for q in all_questions:
+        lesson = q.get('lesson', 1)
+        lesson_counts[lesson] = lesson_counts.get(lesson, 0) + 1
+    
     st.markdown("""
     <div style='text-align: right; font-size: 1.1rem; line-height: 2;'>
     
@@ -508,28 +529,31 @@ if page == "🏠 الرئيسية":
     
     <div class='info-box'>
     <b>📘 الوحدة الأولى: الطاقة الحرارية وتغيرات المادة</b><br>
-    • التغيرات الفيزيائية (الذوبان)<br>
-    • التغيرات الكيميائية (التفاعلات)<br>
-    • {unit1_count} سؤال
+    • {lesson1} سؤال - الدرس الأول: التغيرات الفيزيائية<br>
+    • {lesson2} سؤال - الدرس الثاني: التغيرات الكيميائية<br>
+    • {lesson3} سؤال - الدرس الثالث: التطبيقات العملية<br>
     </div>
     
     <div class='info-box'>
     <b>📗 الوحدة الثانية: الكيمياء الكهروكيميائية</b><br>
-    • الخلايا الجلفانية<br>
-    • الخلايا التحليلية<br>
-    • التآكل والحماية<br>
-    • {unit2_count} سؤال
+    • {lesson4} سؤال - الكهروكيمياء<br>
     </div>
     
     <div class='success-box'>
     ✅ <b>مميزات التطبيق:</b><br>
     • أسئلة بنفس الترتيب دائماً (للمذاكرة الجماعية)<br>
     • شرائح تفاعلية<br>
+    • تتبع الإجابات الصحيحة والخاطئة لكل سؤال<br>
     • إحصائيات التقدم
     </div>
     
     </div>
-    """.format(unit1_count=len(unit1_questions), unit2_count=len(unit2_questions)), unsafe_allow_html=True)
+    """.format(
+        lesson1=lesson_counts.get(1, 0),
+        lesson2=lesson_counts.get(2, 0),
+        lesson3=lesson_counts.get(3, 0),
+        lesson4=lesson_counts.get(4, 0)
+    ), unsafe_allow_html=True)
 
 elif page == "📖 الوحدة الأولى":
     st.markdown("<div class='unit-badge unit-1'>الوحدة الأولى</div>", unsafe_allow_html=True)
@@ -636,47 +660,125 @@ elif page == "❓ اختبار MCQ":
     if not st.session_state.quiz_started:
         st.markdown("<h3 style='text-align: right;'>⚙️ إعدادات الاختبار</h3>", unsafe_allow_html=True)
         
+        # Count available questions
+        lesson_counts = {}
+        for q in all_questions:
+            lesson = q.get('lesson', 1)
+            lesson_counts[lesson] = lesson_counts.get(lesson, 0) + 1
+        
+        unit1_total = lesson_counts.get(1, 0) + lesson_counts.get(2, 0) + lesson_counts.get(3, 0)
+        unit2_total = lesson_counts.get(4, 0)
+        
+        # Number of questions - allow ALL questions
+        max_questions = len(all_questions)
+        
         col1, col2 = st.columns(2)
         with col1:
-            num_q = st.slider("عدد الأسئلة:", 5, min(100, len(all_questions)), 20)
-        with col2:
-            unit_filter = st.selectbox("اختر الوحدة:", ["الكل", "الوحدة الأولى فقط", "الوحدة الثانية فقط"])
+            # Allow up to all questions (531)
+            num_q_options = [10, 20, 50, 100, 200, "الكل"]
+            num_q_choice = st.selectbox("عدد الأسئلة:", num_q_options, index=3)
+            if num_q_choice == "الكل":
+                num_q = max_questions
+            else:
+                num_q = num_q_choice
         
-        st.markdown("""
+        with col2:
+            filter_options = [
+                "الكل",
+                "📘 الوحدة الأولى - الدرس الأول (التغيرات الفيزيائية)",
+                "📘 الوحدة الأولى - الدرس الثاني (التغيرات الكيميائية)",
+                "📘 الوحدة الأولى - الدرس الثالث (التطبيقات)",
+                "📗 الوحدة الثانية (الكهروكيمياء)"
+            ]
+            lesson_filter = st.selectbox("تصفية حسب:", filter_options)
+        
+        # Show count
+        filtered_preview = all_questions.copy()
+        if lesson_filter == "📘 الوحدة الأولى - الدرس الأول (التغيرات الفيزيائية)":
+            filtered_preview = [q for q in filtered_preview if q.get('lesson', 1) == 1]
+        elif lesson_filter == "📘 الوحدة الأولى - الدرس الثاني (التغيرات الكيميائية)":
+            filtered_preview = [q for q in filtered_preview if q.get('lesson', 1) == 2]
+        elif lesson_filter == "📘 الوحدة الأولى - الدرس الثالث (التطبيقات)":
+            filtered_preview = [q for q in filtered_preview if q.get('lesson', 1) == 3]
+        elif lesson_filter == "📗 الوحدة الثانية (الكهروكيمياء)":
+            filtered_preview = [q for q in filtered_preview if q.get('lesson', 1) == 4]
+        
+        available_count = len(filtered_preview)
+        actual_num_q = min(num_q, available_count) if isinstance(num_q, int) else available_count
+        
+        st.markdown(f"""
         <div class='info-box' style='text-align: right;'>
-        ℹ️ <b>ملاحظة:</b> الأسئلة تظهر بنفس الترتيب دائماً للمذاكرة الجماعية
+        ℹ️ <b>عدد الأسئلة المتاحة:</b> {available_count} سؤال
         </div>
         """, unsafe_allow_html=True)
         
+        # Question stats
+        st.markdown("<h4 style='text-align: right;'>📊 توزيع الأسئلة:</h4>", unsafe_allow_html=True)
+        stat_cols = st.columns(4)
+        with stat_cols[0]:
+            st.metric("الدرس الأول", lesson_counts.get(1, 0))
+        with stat_cols[1]:
+            st.metric("الدرس الثاني", lesson_counts.get(2, 0))
+        with stat_cols[2]:
+            st.metric("الدرس الثالث", lesson_counts.get(3, 0))
+        with stat_cols[3]:
+            st.metric("الوحدة الثانية", lesson_counts.get(4, 0))
+        
         if st.button("🚀 بدء الاختبار", use_container_width=True):
             filtered = all_questions.copy()
-            if unit_filter == "الوحدة الأولى فقط":
-                filtered = [q for q in filtered if q.get('unit', 1) == 1]
-            elif unit_filter == "الوحدة الثانية فقط":
-                filtered = [q for q in filtered if q.get('unit', 1) == 2]
+            
+            # Apply lesson filter
+            if lesson_filter == "📘 الوحدة الأولى - الدرس الأول (التغيرات الفيزيائية)":
+                filtered = [q for q in filtered if q.get('lesson', 1) == 1]
+            elif lesson_filter == "📘 الوحدة الأولى - الدرس الثاني (التغيرات الكيميائية)":
+                filtered = [q for q in filtered if q.get('lesson', 1) == 2]
+            elif lesson_filter == "📘 الوحدة الأولى - الدرس الثالث (التطبيقات)":
+                filtered = [q for q in filtered if q.get('lesson', 1) == 3]
+            elif lesson_filter == "📗 الوحدة الثانية (الكهروكيمياء)":
+                filtered = [q for q in filtered if q.get('lesson', 1) == 4]
             
             # Sequential order (not random)
-            n = min(num_q, len(filtered))
+            if isinstance(num_q, int):
+                n = min(num_q, len(filtered))
+            else:
+                n = len(filtered)
+            
             st.session_state.selected_questions = filtered[:n]
             st.session_state.quiz_started = True
             st.session_state.current_question = 0
             st.session_state.correct_count = 0
             st.session_state.wrong_count = 0
             st.session_state.show_answer = False
+            # Reset question results for new quiz
+            st.session_state.question_results = {}
             st.rerun()
     else:
         current_q = st.session_state.selected_questions[st.session_state.current_question]
         q_num = st.session_state.current_question + 1
         total_q = len(st.session_state.selected_questions)
+        q_id = f"q_{st.session_state.current_question}"
         
-        # Unit badge
+        # Unit and lesson badge
         unit_color = "#667eea" if current_q.get('unit', 1) == 1 else "#ff6b6b"
         unit_name = "الوحدة الأولى" if current_q.get('unit', 1) == 1 else "الوحدة الثانية"
+        lesson_num = current_q.get('lesson', 1)
+        lesson_name = lesson_names.get(lesson_num, f"الدرس {lesson_num}")
+        
+        # Show question result indicator if already answered
+        question_status = ""
+        if q_id in st.session_state.question_results:
+            if st.session_state.question_results[q_id]:
+                question_status = "<span style='background: #28a745; color: white; padding: 5px 15px; border-radius: 15px; margin-right: 10px;'>✓ صحيح</span>"
+            else:
+                question_status = "<span style='background: #dc3545; color: white; padding: 5px 15px; border-radius: 15px; margin-right: 10px;'>✗ خطأ</span>"
+        
         st.markdown(f"""
         <div style='text-align: center; margin-bottom: 15px;'>
             <span style='background: {unit_color}; color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold;'>
                 {unit_name}
             </span>
+            <span class='lesson-tag lesson-tag-{lesson_num}' style='margin-right: 10px;'>{lesson_name}</span>
+            {question_status}
         </div>
         """, unsafe_allow_html=True)
         
@@ -691,7 +793,10 @@ elif page == "❓ اختبار MCQ":
                 if st.button(f"{i+1}. {opt}", key=f"opt_{i}", use_container_width=True):
                     st.session_state.user_answer = i
                     st.session_state.show_answer = True
-                    if i == current_q['correct']:
+                    is_correct = (i == current_q['correct'])
+                    # Store result for this question
+                    st.session_state.question_results[q_id] = is_correct
+                    if is_correct:
                         st.session_state.correct_count += 1
                     else:
                         st.session_state.wrong_count += 1
@@ -735,6 +840,24 @@ elif page == "❓ اختبار MCQ":
                         st.rerun()
         
         st.markdown("---")
+        
+        # Show question status summary
+        st.markdown("<h4 style='text-align: right;'>📋 حالة الأسئلة:</h4>", unsafe_allow_html=True)
+        status_cols = st.columns(min(10, total_q))
+        for i in range(min(10, total_q)):
+            check_id = f"q_{i}"
+            if check_id in st.session_state.question_results:
+                if st.session_state.question_results[check_id]:
+                    status_cols[i].markdown(f"<div style='text-align: center; background: #28a745; color: white; padding: 5px; border-radius: 5px; font-size: 0.8rem;'>{i+1}✓</div>", unsafe_allow_html=True)
+                else:
+                    status_cols[i].markdown(f"<div style='text-align: center; background: #dc3545; color: white; padding: 5px; border-radius: 5px; font-size: 0.8rem;'>{i+1}✗</div>", unsafe_allow_html=True)
+            else:
+                is_current = (i == st.session_state.current_question)
+                bg_color = "#ffc107" if is_current else "#e9ecef"
+                text_color = "#000" if is_current else "#666"
+                status_cols[i].markdown(f"<div style='text-align: center; background: {bg_color}; color: {text_color}; padding: 5px; border-radius: 5px; font-size: 0.8rem;'>{i+1}</div>", unsafe_allow_html=True)
+        
+        st.markdown("---")
         c1, c2, c3 = st.columns(3)
         c1.metric("✅ الإجابات الصحيحة", st.session_state.correct_count)
         c2.metric("❌ الإجابات الخاطئة", st.session_state.wrong_count)
@@ -748,6 +871,12 @@ elif page == "📊 إحصائيات":
     
     unit1_count = len([q for q in all_questions if q.get('unit', 1) == 1])
     unit2_count = len([q for q in all_questions if q.get('unit', 1) == 2])
+    
+    # Count by lesson
+    lesson_counts = {}
+    for q in all_questions:
+        lesson = q.get('lesson', 1)
+        lesson_counts[lesson] = lesson_counts.get(lesson, 0) + 1
     
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -772,6 +901,25 @@ elif page == "📊 إحصائيات":
             <div style='font-size: 2.5rem;'>📗</div>
             <h3>{unit2_count}</h3>
             <p>الوحدة الثانية</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Lesson breakdown
+    st.markdown("---")
+    st.markdown("<h3 style='text-align: right;'>📊 توزيع الأسئلة حسب الدرس</h3>", unsafe_allow_html=True)
+    
+    lesson_cols = st.columns(4)
+    lesson_data = [
+        ("الدرس الأول", lesson_counts.get(1, 0), "#667eea"),
+        ("الدرس الثاني", lesson_counts.get(2, 0), "#11998e"),
+        ("الدرس الثالث", lesson_counts.get(3, 0), "#f093fb"),
+        ("الوحدة الثانية", lesson_counts.get(4, 0), "#ff6b6b"),
+    ]
+    for i, (name, count, color) in enumerate(lesson_data):
+        lesson_cols[i].markdown(f"""
+        <div style='background: {color}; color: white; padding: 20px; border-radius: 15px; text-align: center;'>
+            <div style='font-size: 1.5rem; font-weight: bold;'>{count}</div>
+            <div>{name}</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -808,6 +956,7 @@ elif page == "📊 إحصائيات":
     if st.button("🔄 إعادة تعيين الإحصائيات", use_container_width=True):
         st.session_state.correct_count = 0
         st.session_state.wrong_count = 0
+        st.session_state.question_results = {}
         st.rerun()
 
 st.sidebar.markdown("---")
@@ -816,8 +965,9 @@ st.sidebar.markdown("""
 📝 <b>تطبيق مينا للمذاكرة</b><br><br>
 تعلم الكيمياء بطريقة تفاعلية!<br><br>
 ✅ <b>مميزات التطبيق:</b><br>
+• {total} سؤال متاح<br>
 • أسئلة بنفس الترتيب دائماً<br>
-• شرائح تفاعلية<br>
-• وحدتان متكاملتان
+• تصفية حسب الدرس<br>
+• شرائح تفاعلية
 </div>
-""", unsafe_allow_html=True)
+""".format(total=len(all_questions)), unsafe_allow_html=True)
