@@ -13,105 +13,304 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS
+# Enhanced CSS with RTL fixes
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&display=swap');
-    * { font-family: 'Noto Naskh Arabic', sans-serif; }
     
+    * {
+        font-family: 'Noto Naskh Arabic', 'Segoe UI', sans-serif;
+    }
+    
+    /* RTL Support */
+    html, body, .stApp {
+        direction: rtl;
+        text-align: right;
+    }
+    
+    /* Main container RTL */
+    .main .block-container {
+        direction: rtl;
+        text-align: right;
+        padding: 2rem 1rem;
+    }
+    
+    /* All text elements RTL */
+    h1, h2, h3, h4, h5, h6, p, div, span, li, label {
+        text-align: right;
+    }
+    
+    /* Headers */
+    h1 {
+        color: #1e3a5f;
+        text-align: center;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+        font-size: 2.2rem;
+    }
+    
+    h2 {
+        color: #1e3a5f;
+        font-size: 1.8rem;
+        margin-top: 20px;
+    }
+    
+    h3 {
+        color: #2d4a6f;
+        font-size: 1.4rem;
+    }
+    
+    /* Content boxes */
     .content-box {
-        background: #f8f9fa;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         border-radius: 15px;
         padding: 25px;
         margin: 15px 0;
         border-right: 5px solid #667eea;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        direction: rtl;
+        text-align: right;
     }
     
+    .content-box ul {
+        padding-right: 25px;
+        padding-left: 0;
+        list-style-position: outside;
+    }
+    
+    .content-box li {
+        margin: 10px 0;
+        line-height: 1.8;
+    }
+    
+    /* Question cards */
     .question-card {
-        background: #f8f9fa;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         border-radius: 15px;
         padding: 25px;
         margin: 15px 0;
         border-right: 5px solid #11998e;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     
+    /* Formula box */
     .formula-box {
         background: #1e3a5f;
         color: #00d4ff;
-        padding: 15px;
-        border-radius: 10px;
+        padding: 18px;
+        border-radius: 12px;
         text-align: center;
         margin: 15px 0;
-        font-family: monospace;
+        font-family: 'Courier New', monospace;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     
+    /* Stats cards */
     .stat-card {
         background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
         color: white;
-        border-radius: 15px;
-        padding: 20px;
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-card h2 {
+        color: white;
+        font-size: 2.5rem;
+        margin: 10px 0;
+    }
+    
+    .stat-card h3 {
+        color: white;
+        font-size: 1.8rem;
+        margin: 5px 0;
+    }
+    
+    .stat-card p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1.1rem;
         text-align: center;
     }
     
+    /* Answer feedback */
     .correct-answer {
-        background: #28a745;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         color: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 10px 0;
+        padding: 18px;
+        border-radius: 12px;
+        margin: 15px 0;
+        font-weight: bold;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
     }
     
     .wrong-answer {
-        background: #dc3545;
+        background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
         color: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 10px 0;
+        padding: 18px;
+        border-radius: 12px;
+        margin: 15px 0;
+        font-weight: bold;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
     }
     
+    /* Info boxes */
     .info-box {
-        background: #e3f2fd;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 10px 0;
-        border-right: 4px solid #2196f3;
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        padding: 18px;
+        border-radius: 12px;
+        margin: 12px 0;
+        border-right: 5px solid #2196f3;
     }
     
     .warning-box {
-        background: #fff3cd;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 10px 0;
-        border-right: 4px solid #ffc107;
+        background: linear-gradient(135deg, #fff3cd 0%, #ffe082 100%);
+        padding: 18px;
+        border-radius: 12px;
+        margin: 12px 0;
+        border-right: 5px solid #ffc107;
     }
     
+    .success-box {
+        background: linear-gradient(135deg, #d4edda 0%, #a5d6a7 100%);
+        padding: 18px;
+        border-radius: 12px;
+        margin: 12px 0;
+        border-right: 5px solid #28a745;
+    }
+    
+    /* Highlight */
     .highlight {
-        background: #a8edea;
-        padding: 2px 8px;
-        border-radius: 4px;
+        background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-weight: bold;
     }
     
+    /* Lesson borders */
     .lesson-1 { border-right-color: #667eea !important; }
     .lesson-2 { border-right-color: #11998e !important; }
     .lesson-3 { border-right-color: #f093fb !important; }
     .lesson-4 { border-right-color: #ff6b6b !important; }
     
-    h1 {
-        color: #1e3a5f;
-        text-align: center;
-        border-bottom: 3px solid #667eea;
-        padding-bottom: 10px;
-    }
-    
-    h2, h3 { color: #1e3a5f; }
-    
+    /* Progress */
     .progress-text {
         text-align: center;
-        font-size: 18px;
+        font-size: 1.2rem;
         font-weight: bold;
         color: #1e3a5f;
+        margin: 15px 0;
+    }
+    
+    /* Slide navigation container */
+    .slide-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin: 20px 0;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 15px;
+    }
+    
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        direction: rtl;
+        margin: 15px 0;
+    }
+    
+    th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        text-align: right;
+        font-weight: 600;
+    }
+    
+    td {
+        padding: 12px 15px;
+        border: 1px solid #dee2e6;
+        text-align: right;
+    }
+    
+    tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    /* Button styling */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Number buttons for slides */
+    .slide-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        width: 45px !important;
+        height: 45px !important;
+        font-weight: bold !important;
+        font-size: 1rem !important;
+    }
+    
+    .slide-btn:hover {
+        transform: scale(1.1) !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+    }
+    
+    /* Unit badge */
+    .unit-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+    
+    .unit-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .unit-2 { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; }
+    
+    /* Sidebar */
+    .css-1lcbmhc {
+        direction: rtl;
+    }
+    
+    /* Fix for columns RTL */
+    .row-widget.stHorizontalBlock {
+        direction: rtl;
+    }
+    
+    /* Main content area */
+    .main {
+        direction: rtl;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -121,7 +320,10 @@ for key in ['current_slide', 'current_question', 'quiz_started', 'show_answer', 
     if key not in st.session_state:
         st.session_state[key] = 0 if 'count' in key or 'slide' in key or 'question' in key else False
 
-# Combine all questions with unit identifiers
+if 'current_slide_u2' not in st.session_state:
+    st.session_state.current_slide_u2 = 0
+
+# Combine all questions
 all_questions = []
 for q in unit1_questions:
     q_copy = q.copy()
@@ -130,12 +332,12 @@ for q in unit1_questions:
 for q in unit2_questions:
     q_copy = q.copy()
     q_copy['unit'] = 2
-    q_copy['lesson'] = 4  # Unit 2 is lesson 4
+    q_copy['lesson'] = 4
     all_questions.append(q_copy)
 
 # Unit 1 slides
 unit1_slides = [
-    {"title": "📘 الوحدة الأولى: التغيرات الفيزيائية للتغيرات الحرارية", "content": """
+    {"title": "📘 الوحدة الأولى: التغيرات الحرارية", "content": """
     <div class='content-box'>
     <h3>🎯 أهداف الوحدة:</h3>
     <ul>
@@ -237,8 +439,35 @@ unit1_slides = [
 ]
 
 # Sidebar
-st.sidebar.title("📚 قائمة التنقل")
+st.sidebar.markdown("<h1 style='text-align: right;'>📚 قائمة التنقل</h1>", unsafe_allow_html=True)
 page = st.sidebar.radio("", ["🏠 الرئيسية", "📖 الوحدة الأولى", "📖 الوحدة الثانية", "❓ اختبار MCQ", "📊 إحصائيات"], label_visibility="collapsed")
+
+def render_slide_nav(total_slides, current, key_prefix, callback):
+    """Render slide navigation with better UI"""
+    # Create rows of buttons
+    buttons_per_row = 7
+    num_rows = (total_slides + buttons_per_row - 1) // buttons_per_row
+    
+    for row in range(num_rows):
+        cols = st.columns(min(buttons_per_row, total_slides - row * buttons_per_row))
+        for i, col in enumerate(cols):
+            slide_num = row * buttons_per_row + i
+            # Highlight current slide
+            if slide_num == current:
+                button_style = """
+                    <style>
+                    div[data-testid="stHorizontalBlock"] div:nth-child({}) button {{
+                        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
+                        transform: scale(1.1);
+                        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4) !important;
+                    }}
+                    </style>
+                """
+                st.markdown(button_style, unsafe_allow_html=True)
+            
+            if col.button(f"{slide_num + 1}", key=f"{key_prefix}_{slide_num}"):
+                callback(slide_num)
+                st.rerun()
 
 if page == "🏠 الرئيسية":
     st.title("📚 مرحباً بك في تطبيق مينا للمذاكرة")
@@ -246,100 +475,157 @@ if page == "🏠 الرئيسية":
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown(f"<div class='stat-card'><h2>📖</h2><h3>25 شريحة</h3><p>وحدتان تعليميتان</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class='stat-card'>
+            <div style='font-size: 3rem;'>📖</div>
+            <h3>25 شريحة</h3>
+            <p>وحدتان تعليميتان</p>
+        </div>
+        """, unsafe_allow_html=True)
     with col2:
-        st.markdown(f"<div class='stat-card'><h2>❓</h2><h3>{len(all_questions)} سؤال</h3><p>أسئلة متعددة الخيارات</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class='stat-card'>
+            <div style='font-size: 3rem;'>❓</div>
+            <h3>{len(all_questions)} سؤال</h3>
+            <p>أسئلة متعددة الخيارات</p>
+        </div>
+        """, unsafe_allow_html=True)
     with col3:
-        st.markdown("<div class='stat-card'><h2>🎯</h2><h3>100% مجاني</h3><p>تعلم بلا حدود</p></div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div class='stat-card'>
+            <div style='font-size: 3rem;'>🎯</div>
+            <h3>100% مجاني</h3>
+            <p>تعلم بلا حدود</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     st.markdown("---")
+    
     st.markdown("""
+    <div style='text-align: right; font-size: 1.1rem; line-height: 2;'>
+    
     ### 📋 محتوى التطبيق:
     
-    **الوحدة الأولى: الطاقة الحرارية وتغيرات المادة**
-    - التغيرات الفيزيائية (الذوبان)
-    - التغيرات الكيميائية (التفاعلات)
+    <div class='info-box'>
+    <b>📘 الوحدة الأولى: الطاقة الحرارية وتغيرات المادة</b><br>
+    • التغيرات الفيزيائية (الذوبان)<br>
+    • التغيرات الكيميائية (التفاعلات)<br>
+    • {unit1_count} سؤال
+    </div>
     
-    **الوحدة الثانية: الكيمياء الكهروكيميائية**
-    - الخلايا الجلفانية
-    - الخلايا التحليلية
-    - التآكل والحماية
-    """)
+    <div class='info-box'>
+    <b>📗 الوحدة الثانية: الكيمياء الكهروكيميائية</b><br>
+    • الخلايا الجلفانية<br>
+    • الخلايا التحليلية<br>
+    • التآكل والحماية<br>
+    • {unit2_count} سؤال
+    </div>
+    
+    <div class='success-box'>
+    ✅ <b>مميزات التطبيق:</b><br>
+    • أسئلة بنفس الترتيب دائماً (للمذاكرة الجماعية)<br>
+    • شرائح تفاعلية<br>
+    • إحصائيات التقدم
+    </div>
+    
+    </div>
+    """.format(unit1_count=len(unit1_questions), unit2_count=len(unit2_questions)), unsafe_allow_html=True)
 
 elif page == "📖 الوحدة الأولى":
-    st.title("📖 الوحدة الأولى: التغيرات الحرارية")
+    st.markdown("<div class='unit-badge unit-1'>الوحدة الأولى</div>", unsafe_allow_html=True)
+    st.title("التغيرات الحرارية")
     st.markdown("---")
     
+    # Progress
+    st.markdown(f"<p class='progress-text'>الشريحة {st.session_state.current_slide + 1} من {len(unit1_slides)}</p>", unsafe_allow_html=True)
+    st.progress((st.session_state.current_slide + 1) / len(unit1_slides))
+    
     # Navigation
+    st.markdown("<div style='text-align: center; margin: 20px 0;'><b>اختر الشريحة:</b></div>", unsafe_allow_html=True)
     cols = st.columns(7)
     for i in range(min(7, len(unit1_slides))):
-        if cols[i].button(f"{i+1}", key=f"u1_{i}"):
+        btn_type = "primary" if i == st.session_state.current_slide else "secondary"
+        if cols[i].button(f"{i+1}", key=f"u1_{i}", type=btn_type):
             st.session_state.current_slide = i
             st.rerun()
     
     if len(unit1_slides) > 7:
-        cols2 = st.columns(len(unit1_slides) - 7)
-        for i in range(len(unit1_slides) - 7):
+        cols2 = st.columns(6)
+        for i in range(6):
             idx = i + 7
-            if cols2[i].button(f"{idx+1}", key=f"u1_{idx}"):
-                st.session_state.current_slide = idx
-                st.rerun()
+            if idx < len(unit1_slides):
+                btn_type = "primary" if idx == st.session_state.current_slide else "secondary"
+                if cols2[i].button(f"{idx+1}", key=f"u1_{idx}", type=btn_type):
+                    st.session_state.current_slide = idx
+                    st.rerun()
     
+    st.markdown("---")
+    
+    # Content
     current = unit1_slides[st.session_state.current_slide]
-    st.markdown(f"<p class='progress-text'>الشريحة {st.session_state.current_slide + 1} من {len(unit1_slides)}</p>", unsafe_allow_html=True)
-    st.progress((st.session_state.current_slide + 1) / len(unit1_slides))
     st.markdown(f"<h2 style='text-align: center; color: #667eea;'>{current['title']}</h2>", unsafe_allow_html=True)
     st.markdown(current['content'], unsafe_allow_html=True)
     
+    # Nav buttons
     col1, col2, col3 = st.columns([1, 2, 1])
     with col1:
         if st.session_state.current_slide < len(unit1_slides) - 1:
-            if st.button("التالي ⬅️"):
+            if st.button("⬅️ التالي", use_container_width=True):
                 st.session_state.current_slide += 1
                 st.rerun()
     with col3:
         if st.session_state.current_slide > 0:
-            if st.button("➡️ السابق"):
+            if st.button("السابق ➡️", use_container_width=True):
                 st.session_state.current_slide -= 1
                 st.rerun()
 
 elif page == "📖 الوحدة الثانية":
-    st.title("📖 الوحدة الثانية: الكيمياء الكهروكيميائية")
+    st.markdown("<div class='unit-badge unit-2'>الوحدة الثانية</div>", unsafe_allow_html=True)
+    st.title("الكيمياء الكهروكيميائية")
     st.markdown("---")
     
-    # Navigation for unit 2
-    if 'current_slide_u2' not in st.session_state:
-        st.session_state.current_slide_u2 = 0
+    current_slide = st.session_state.current_slide_u2
     
-    cols = st.columns(min(6, len(unit2_slides)))
+    # Progress
+    st.markdown(f"<p class='progress-text'>الشريحة {current_slide + 1} من {len(unit2_slides)}</p>", unsafe_allow_html=True)
+    st.progress((current_slide + 1) / len(unit2_slides))
+    
+    # Navigation
+    st.markdown("<div style='text-align: center; margin: 20px 0;'><b>اختر الشريحة:</b></div>", unsafe_allow_html=True)
+    cols = st.columns(6)
     for i in range(min(6, len(unit2_slides))):
-        if cols[i].button(f"{i+1}", key=f"u2_{i}"):
+        btn_type = "primary" if i == current_slide else "secondary"
+        if cols[i].button(f"{i+1}", key=f"u2_{i}", type=btn_type):
             st.session_state.current_slide_u2 = i
             st.rerun()
     
     if len(unit2_slides) > 6:
-        cols2 = st.columns(len(unit2_slides) - 6)
-        for i in range(len(unit2_slides) - 6):
+        cols2 = st.columns(5)
+        for i in range(5):
             idx = i + 6
-            if cols2[i].button(f"{idx+1}", key=f"u2_{idx}"):
-                st.session_state.current_slide_u2 = idx
-                st.rerun()
+            if idx < len(unit2_slides):
+                btn_type = "primary" if idx == current_slide else "secondary"
+                if cols2[i].button(f"{idx+1}", key=f"u2_{idx}", type=btn_type):
+                    st.session_state.current_slide_u2 = idx
+                    st.rerun()
     
-    current = unit2_slides[st.session_state.current_slide_u2]
-    st.markdown(f"<p class='progress-text'>الشريحة {st.session_state.current_slide_u2 + 1} من {len(unit2_slides)}</p>", unsafe_allow_html=True)
-    st.progress((st.session_state.current_slide_u2 + 1) / len(unit2_slides))
+    st.markdown("---")
+    
+    # Content
+    current = unit2_slides[current_slide]
     st.markdown(f"<h2 style='text-align: center; color: #ff6b6b;'>{current['title']}</h2>", unsafe_allow_html=True)
     st.markdown(current['content'], unsafe_allow_html=True)
     
+    # Nav buttons
     col1, col2, col3 = st.columns([1, 2, 1])
     with col1:
-        if st.session_state.current_slide_u2 < len(unit2_slides) - 1:
-            if st.button("التالي ⬅️"):
+        if current_slide < len(unit2_slides) - 1:
+            if st.button("⬅️ التالي", use_container_width=True):
                 st.session_state.current_slide_u2 += 1
                 st.rerun()
     with col3:
-        if st.session_state.current_slide_u2 > 0:
-            if st.button("➡️ السابق"):
+        if current_slide > 0:
+            if st.button("السابق ➡️", use_container_width=True):
                 st.session_state.current_slide_u2 -= 1
                 st.rerun()
 
@@ -348,7 +634,7 @@ elif page == "❓ اختبار MCQ":
     st.markdown("---")
     
     if not st.session_state.quiz_started:
-        st.markdown("<h3>⚙️ إعدادات الاختبار</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: right;'>⚙️ إعدادات الاختبار</h3>", unsafe_allow_html=True)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -356,18 +642,22 @@ elif page == "❓ اختبار MCQ":
         with col2:
             unit_filter = st.selectbox("اختر الوحدة:", ["الكل", "الوحدة الأولى فقط", "الوحدة الثانية فقط"])
         
-        st.info("ℹ️ الأسئلة تظهر بنفس الترتيب دائماً للمذاكرة الجماعية")
+        st.markdown("""
+        <div class='info-box' style='text-align: right;'>
+        ℹ️ <b>ملاحظة:</b> الأسئلة تظهر بنفس الترتيب دائماً للمذاكرة الجماعية
+        </div>
+        """, unsafe_allow_html=True)
         
-        if st.button("🚀 بدء الاختبار"):
+        if st.button("🚀 بدء الاختبار", use_container_width=True):
             filtered = all_questions.copy()
             if unit_filter == "الوحدة الأولى فقط":
                 filtered = [q for q in filtered if q.get('unit', 1) == 1]
             elif unit_filter == "الوحدة الثانية فقط":
                 filtered = [q for q in filtered if q.get('unit', 1) == 2]
             
-            # Sequential order (not random) for group study
+            # Sequential order (not random)
             n = min(num_q, len(filtered))
-            st.session_state.selected_questions = filtered[:n]  # Take first n questions in order
+            st.session_state.selected_questions = filtered[:n]
             st.session_state.quiz_started = True
             st.session_state.current_question = 0
             st.session_state.correct_count = 0
@@ -379,20 +669,26 @@ elif page == "❓ اختبار MCQ":
         q_num = st.session_state.current_question + 1
         total_q = len(st.session_state.selected_questions)
         
-        # Show unit indicator
+        # Unit badge
         unit_color = "#667eea" if current_q.get('unit', 1) == 1 else "#ff6b6b"
         unit_name = "الوحدة الأولى" if current_q.get('unit', 1) == 1 else "الوحدة الثانية"
-        st.markdown(f"<div style='text-align: center; color: {unit_color}; font-weight: bold;'>{unit_name}</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style='text-align: center; margin-bottom: 15px;'>
+            <span style='background: {unit_color}; color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold;'>
+                {unit_name}
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
         
         st.progress(q_num / total_q)
         st.markdown(f"<p class='progress-text'>السؤال {q_num} من {total_q}</p>", unsafe_allow_html=True)
         
         lesson_class = f"lesson-{current_q.get('lesson', 1)}"
-        st.markdown(f"<div class='question-card {lesson_class}'><h3>❓ {current_q['q']}</h3></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='question-card {lesson_class}'><h3 style='font-size: 1.3rem;'>❓ {current_q['q']}</h3></div>", unsafe_allow_html=True)
         
         if not st.session_state.show_answer:
             for i, opt in enumerate(current_q['options']):
-                if st.button(f"{i+1}. {opt}", key=f"opt_{i}"):
+                if st.button(f"{i+1}. {opt}", key=f"opt_{i}", use_container_width=True):
                     st.session_state.user_answer = i
                     st.session_state.show_answer = True
                     if i == current_q['correct']:
@@ -405,35 +701,46 @@ elif page == "❓ اختبار MCQ":
             correct_ans = current_q['correct']
             
             if user_ans == correct_ans:
-                st.markdown(f"<div class='correct-answer'>✅ إجابة صحيحة!<br>الإجابة: {current_q['options'][correct_ans]}</div>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div class='correct-answer' style='text-align: right;'>
+                    ✅ <b>إجابة صحيحة!</b><br>
+                    الإجابة الصحيحة: {current_q['options'][correct_ans]}
+                </div>
+                """, unsafe_allow_html=True)
             else:
-                st.markdown(f"<div class='wrong-answer'>❌ إجابة خاطئة!<br>إجابتك: {current_q['options'][user_ans]}<br>الصحيحة: {current_q['options'][correct_ans]}</div>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div class='wrong-answer' style='text-align: right;'>
+                    ❌ <b>إجابة خاطئة!</b><br>
+                    إجابتك: {current_q['options'][user_ans]}<br>
+                    الإجابة الصحيحة: {current_q['options'][correct_ans]}
+                </div>
+                """, unsafe_allow_html=True)
             
             col1, col2, col3 = st.columns([1, 2, 1])
             with col1:
                 if q_num < total_q:
-                    if st.button("التالي ⬅️"):
+                    if st.button("⬅️ السؤال التالي", use_container_width=True):
                         st.session_state.current_question += 1
                         st.session_state.show_answer = False
                         st.rerun()
                 else:
-                    if st.button("🏁 إنهاء"):
+                    if st.button("🏁 إنهاء الاختبار", use_container_width=True):
                         st.session_state.quiz_started = False
                         st.rerun()
             with col3:
                 if q_num > 1:
-                    if st.button("➡️ السابق"):
+                    if st.button("السابق ➡️", use_container_width=True):
                         st.session_state.current_question -= 1
                         st.session_state.show_answer = False
                         st.rerun()
         
         st.markdown("---")
         c1, c2, c3 = st.columns(3)
-        c1.metric("✅ صحيحة", st.session_state.correct_count)
-        c2.metric("❌ خاطئة", st.session_state.wrong_count)
+        c1.metric("✅ الإجابات الصحيحة", st.session_state.correct_count)
+        c2.metric("❌ الإجابات الخاطئة", st.session_state.wrong_count)
         total = st.session_state.correct_count + st.session_state.wrong_count
         pct = (st.session_state.correct_count / total * 100) if total > 0 else 0
-        c3.metric("📊 النسبة", f"{pct:.0f}%")
+        c3.metric("📊 النسبة المئوية", f"{pct:.0f}%")
 
 elif page == "📊 إحصائيات":
     st.title("📊 إحصائيات التعلم")
@@ -444,20 +751,38 @@ elif page == "📊 إحصائيات":
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown(f"<div class='stat-card'><h2>📚</h2><h3>{len(all_questions)}</h3><p>إجمالي الأسئلة</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class='stat-card'>
+            <div style='font-size: 2.5rem;'>📚</div>
+            <h3>{len(all_questions)}</h3>
+            <p>إجمالي الأسئلة</p>
+        </div>
+        """, unsafe_allow_html=True)
     with col2:
-        st.markdown(f"<div class='stat-card'><h2>📘</h2><h3>{unit1_count}</h3><p>الوحدة الأولى</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class='stat-card'>
+            <div style='font-size: 2.5rem;'>📘</div>
+            <h3>{unit1_count}</h3>
+            <p>الوحدة الأولى</p>
+        </div>
+        """, unsafe_allow_html=True)
     with col3:
-        st.markdown(f"<div class='stat-card'><h2>📗</h2><h3>{unit2_count}</h3><p>الوحدة الثانية</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class='stat-card'>
+            <div style='font-size: 2.5rem;'>📗</div>
+            <h3>{unit2_count}</h3>
+            <p>الوحدة الثانية</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     st.markdown("---")
-    st.markdown("<h3>📈 تقدمك في الاختبارات</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: right;'>📈 تقدمك في الاختبارات</h3>", unsafe_allow_html=True)
     
     total_answered = st.session_state.correct_count + st.session_state.wrong_count
     if total_answered > 0:
         c1, c2 = st.columns(2)
-        c1.metric("✅ صحيحة", st.session_state.correct_count)
-        c2.metric("❌ خاطئة", st.session_state.wrong_count)
+        c1.metric("✅ الإجابات الصحيحة", st.session_state.correct_count)
+        c2.metric("❌ الإجابات الخاطئة", st.session_state.wrong_count)
         
         try:
             import plotly.graph_objects as go
@@ -465,20 +790,34 @@ elif page == "📊 إحصائيات":
                 labels=['صحيحة', 'خاطئة'],
                 values=[st.session_state.correct_count, st.session_state.wrong_count],
                 marker_colors=['#28a745', '#dc3545'],
-                textinfo='percent+label'
+                textinfo='percent+label',
+                textfont=dict(size=16)
             )])
-            fig.update_layout(title_text='نسبة الإجابات', title_x=0.5)
+            fig.update_layout(
+                title_text='نسبة الإجابات',
+                title_x=0.5,
+                title_font_size=20
+            )
             st.plotly_chart(fig, use_container_width=True)
         except:
             pass
     else:
-        st.info("📝 لم تقم بأي اختبارات بعد")
+        st.info("📝 لم تقم بأي اختبارات بعد. ابدأ من صفحة 'اختبار MCQ'")
     
     st.markdown("---")
-    if st.button("🔄 إعادة تعيين الإحصائيات"):
+    if st.button("🔄 إعادة تعيين الإحصائيات", use_container_width=True):
         st.session_state.correct_count = 0
         st.session_state.wrong_count = 0
         st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("📝 **تطبيق مينا للمذاكرة**<br>تعلم الكيمياء بطريقة تفاعلية!<br><br>✅ الأسئلة بنفس الترتيب دائماً للمذاكرة الجماعية", unsafe_allow_html=True)
+st.sidebar.markdown("""
+<div style='text-align: right;'>
+📝 <b>تطبيق مينا للمذاكرة</b><br><br>
+تعلم الكيمياء بطريقة تفاعلية!<br><br>
+✅ <b>مميزات التطبيق:</b><br>
+• أسئلة بنفس الترتيب دائماً<br>
+• شرائح تفاعلية<br>
+• وحدتان متكاملتان
+</div>
+""", unsafe_allow_html=True)
