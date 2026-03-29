@@ -1,0 +1,23 @@
+PDF Analysis
+Pages: 26
+
+Page 1:
+  Text length: 0
+  Images: 1
+
+Page 2:
+  Text length: 0
+  Images: 1
+
+Page 3:
+  Text length: 0
+  Images: 1
+
+Page 4:
+  Text length: 0
+  Images: 1
+
+Page 5:
+  Text length: 0
+  Images: 1
+
